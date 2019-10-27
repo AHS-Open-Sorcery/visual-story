@@ -80,7 +80,7 @@ def run_process(params, out: Queue):
 def begin():
     global task
     if task is not None and task.running():
-        return 'duplicate req', 400
+        return 'somebody else is using the gpu. hold on', 400
 
     filename = request.args.get('filename')
     tags = request.args.get('tags')
