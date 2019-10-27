@@ -26,7 +26,7 @@ def submit():
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join('images', filename))
-        return redirect(url_for('progress', filename=filename, tags=request.args.get('tags')))
+        return redirect(url_for('progress', filename=filename, tags=request.form.get('tags')))
 
 
 lock = Lock()
@@ -41,7 +41,7 @@ def progress():
     if tags is None:
         tags = []
     else:
-        tags.split(',')
+        tags = tags.split(',')
     if filename is None:
         return 'failed; filename none', 422
 
@@ -55,7 +55,7 @@ def progress():
     # print(occupations)
 
     # step 2: build prompt
-    prompt = prompt_form.prompt(Counter(list(map(lambda tup: tup[0], objects))), *tags)
+    prompt = prompt_form.prompt(Counter(list(map(lambda tup: tup[0], objects))), tags)
 
     # step 3: send prompt to desired AI
     generated = generation.generate(prompt)
