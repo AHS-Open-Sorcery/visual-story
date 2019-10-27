@@ -52,6 +52,11 @@
             </div>
         </div>
     </section>
+    <section class="section">
+        <p id="story">
+
+        </p>
+    </section>
     <style>
         #image-preview img {
             max-width: 90%;
@@ -64,6 +69,12 @@
         }
         .progress {
             display: none;
+        }
+        #story {
+            font-family: serif;
+            font-size: 18px;
+            max-width: 70%;
+            margin: 0 auto;
         }
     </style>
     <script>
@@ -96,7 +107,11 @@
             fetch('/submit', {
                 method: 'POST',
                 body: formData
-            }).then(console.info);
+            }).then(res => {
+                return res.text();
+            }).then(text => {
+                $('#id').text(text);
+            });
 
         })
     </script>
