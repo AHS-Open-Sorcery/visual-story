@@ -107,8 +107,8 @@ def generate(prompt, output) -> str:
     args.length = 500
     args.model_name_or_path = 'gpt2'
     args.prompt = prompt
-    args.seed = 42
-    args.temperature = 1.0
+    args.seed = random.randint(1, 400)
+    args.temperature = random.random() * 0.1 + 0.95
     args.repetition_penalty = 1.0
     args.top_k = 0
     args.top_p = 0.9

@@ -118,6 +118,7 @@
                     if (json.progress <= 0.99) {
                         fetchProgress();
                     } else {
+                        progress.addClass('is-success');
                         populateResult();
                     }
                 });
@@ -143,7 +144,11 @@
                 body: formData
             }).then(res => {
                 if (res.status === 200) {
-                    $('.progress').show();
+                    let prog = $('.progress');
+                    prog.show();
+                    prog.attr('value', '0');
+                    prog.removeClass('is-danger');
+                    prog.removeClass('is-success');
                     $('.progress-text').text('Identifying...');
                     fetchProgress();
                 }
