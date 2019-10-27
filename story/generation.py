@@ -63,7 +63,7 @@ def sample_sequence(model, length, context, out, num_samples=1, temperature=1, t
     with torch.no_grad():
         for prog in trange(length):
             if prog % 50 == 0:
-                out.put(ProgressUpdate(prog / length * 0.66 + 0.33, f'iteration {prog} of {length}'))
+                out.put(ProgressUpdate(prog / length * 0.55 + 0.33, f'iteration {prog} of {length}'))
 
             inputs = {'input_ids': generated}
             if is_xlnet:
