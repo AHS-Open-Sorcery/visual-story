@@ -28,4 +28,4 @@ def getOccupation(filename):
 
     predictions, probabilities = prediction.predictImage(filename, result_count=1)
 
-    return prediction[0]
+    return predictions[0]

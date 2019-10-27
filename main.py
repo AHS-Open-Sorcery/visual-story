@@ -41,36 +41,39 @@ generated = None
 def run_process(params, out: Queue):
     filename, tags = params
 
-    # step 1: identify objects
-    objects_confidence = list(imageDetection.getObjects(os.path.join('images', filename)))
-    objects = list(map(lambda tup: tup[0], objects_confidence))
-    if len(objects) == 0:
-        out.put(ProgressUpdate(1, 'no objects found', fail=True))
-        return
+    try:
+        # step 1: identify objects
+        objects_confidence = list(imageDetection.getObjects(os.path.join('images', filename)))
+        objects = list(map(lambda tup: tup[0], objects_confidence))
+        if len(objects) == 0:
+            out.put(ProgressUpdate(1, 'no objects found', fail=True))
+            return
 
-    out.put(ProgressUpdate(0.27, 'detected ' + ', '.join(objects)))
+        out.put(ProgressUpdate(0.27, 'detected ' + ', '.join(objects)))
 
-    # TODO come back to occupation detection
-    # occupations = list(imageDetection.getOccupation(os.path.join('images', filename)))
-    # print(occupations)
+        # TODO come back to occupation detection
+        # occupations = list(imageDetection.getOccupation(os.path.join('images', filename)))
+        # print(occupations)
 
-    # step 2: build prompt
-    counter = Counter(objects)
-    if counter['person'] == 1:
-        occupation = imageDetection.getOccupation(os.path.join('images', filename))
-        counter.pop('person')
-        counter[occupation] += 1
+        # step 2: build prompt
+        counter = Counter(objects)
+        if counter['person'] == 1:
+            occupation = imageDetection.getOccupation(os.path.join('images', filename))
+            counter.pop('person')
+            counter[occupation] += 1
 
-    prompt = prompt_form.prompt(counter, tags)
+        prompt = prompt_form.prompt(counter, tags)
 
-    # step 3: send prompt to desired AI
-    global generated
-    while True:
-        generated = prompt + generation.generate(prompt, out)
-        if blacklisted(generated):
-            out.put(ProgressUpdate(0.33, 'found obscene words! retrying'))
-        else:
-            break
+        # step 3: send prompt to desired AI
+        global generated
+        while True:
+            generated = prompt + generation.generate(prompt, out)
+            if blacklisted(generated):
+                out.put(ProgressUpdate(0.33, 'found obscene words! retrying'))
+            else:
+                break
+    except Exception as e:
+        out.put(ProgressUpdate(1, str(e), fail=True))
 
 
 @app.route('/begin')
