@@ -16,4 +16,4 @@ def story_of(elements: Counter, tags) -> str:
     elem_exprs = list(map(pluralize, elements.items()))
     total_elem_expr = ', '.join(elem_exprs[:-1]) + ', and ' + elem_exprs[-1]
     addition = ' with ' + ' and '.join(map(str.strip, tags)) if tags else ''
-    return 'The Story of ' + total_elem_expr + addition
+    return 'The Story of ' + total_elem_expr + addition + ' begins with '
