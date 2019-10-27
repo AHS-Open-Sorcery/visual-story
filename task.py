@@ -7,6 +7,7 @@ from queue import Queue
 class ProgressUpdate:
     progress: float
     message: str
+    fail: bool = False
 
 
 class Task:

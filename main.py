@@ -46,7 +46,10 @@ def run_process(params, out: Queue):
     # step 1: identify objects
     objects_confidence = list(imageDetection.getObjects(os.path.join('images', filename)))
     objects = list(map(lambda tup: tup[0], objects_confidence))
-    print(objects)
+    if len(objects) == 0:
+        out.put(ProgressUpdate(1, 'no objects found', fail=True))
+        return
+
     out.put(ProgressUpdate(0.27, 'detected ' + ', '.join(objects)))
 
     # TODO come back to occupation detection
@@ -94,7 +97,8 @@ def progress():
     if task is None:
         return json.dumps({'status': 'fail', 'message': 'no current task'}), 400
     update: ProgressUpdate = task.read_progress()
-    return json.dumps({'status': 'success', 'message': update.message, 'progress': update.progress})
+    return json.dumps({'status': 'success' if not update.fail else 'fail',
+                       'message': update.message, 'progress': update.progress})
 
 
 @app.route('/result')
