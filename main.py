@@ -66,7 +66,7 @@ def run_process(params, out: Queue):
 
         # step 3: send prompt to desired AI
         global generated
-        while True:
+        for i in range(3):
             generated = prompt + generation.generate(prompt, out)
             if blacklisted(generated):
                 out.put(ProgressUpdate(0.33, 'found obscene words! retrying'))
