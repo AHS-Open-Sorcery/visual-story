@@ -28,3 +28,6 @@ class Task:
 
     def read_progress(self) -> ProgressUpdate:
         return self.output.get()
+
+    def running(self):
+        return self.thread.is_alive()

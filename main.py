@@ -34,13 +34,11 @@ def submit():
         return redirect(url_for('begin', filename=filename, tags=request.form.get('tags')))
 
 
-lock = Lock()
 task = None
 generated = None
 
 
 def run_process(params, out: Queue):
-    lock.acquire()
     filename, tags = params
 
     # step 1: identify objects
@@ -68,12 +66,11 @@ def run_process(params, out: Queue):
         else:
             break
 
-    lock.release()
-
 
 @app.route('/begin')
 def begin():
-    if lock.locked():
+    global task
+    if task is not None and task.running():
         return 'duplicate req', 400
 
     filename = request.args.get('filename')
