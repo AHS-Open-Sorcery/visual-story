@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from ObjectIdentification import imageDetection
 from story import prompt_form, generation
 from collections import Counter
+from threading import Lock
 import os
 app = Flask(__name__)
 
@@ -28,8 +29,11 @@ def submit():
         return redirect(url_for('progress', filename=filename))
 
 
+lock = Lock()
+
 @app.route('/progress')
 def progress():
+    lock.acquire()
     filename = request.args.get('filename')
     if filename is None:
         return 'failed; filename none', 422
@@ -48,6 +52,7 @@ def progress():
 
     # step 4: retrieve generated story
     # step 5: profit
+    lock.release()
     return generated
 
 
