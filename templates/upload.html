@@ -142,10 +142,9 @@
                 method: 'POST',
                 body: formData
             }).then(res => {
-                return res.text();
-            }).then(text => {
-                console.info(text);
-                $('#story').text(text);
+                if (res.status === 200) {
+                    fetchProgress();
+                }
             });
 
         })
