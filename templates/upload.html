@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Upload your image</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    </head>
+    <body>
+    <section class="section">
+        <div class="columns">
+            <div class="column is-half">
+                <form action="#" id="form">
+                <div class="box notification hero">
+                    <p class="title">Upload an Image</p>
+                    <p class="subtitle">I will try to make a story out of your image</p>
+                    <div class="file is-large is-boxed">
+                        <label class="file-label">
+                            <input class="file-input" type="file" name="resume" id="file-input"
+                                   required accept="image/jpeg, image/png">
+                            <span class="file-cta">
+                      <span class="file-icon">
+                        <i class="fas fa-upload"></i>
+                      </span>
+                      <span class="file-label">
+                        Choose a file…
+                      </span>
+                    </span>
+
+                            <span class="file-name" id="filename">
+                    </span>
+                        </label>
+                    </div>
+
+                    <div class="field is-grouped has-padding">
+                        <div class="control is-flex">
+                            <label for="tags">Tags&nbsp;&nbsp;</label><input class="input" id="tags" name="tags">
+                        </div>
+                        <div class="control">
+                            <button class="button is-link" id="submit">Submit</button>
+                        </div>
+                    </div>
+
+                    <progress class="progress" value="0" max="100">0%</progress>
+
+                </div>
+                </form>
+            </div>
+            <div class="column is-half" id="image-preview">
+                <img src="#" alt="your image" id="image">
+            </div>
+        </div>
+    </section>
+    <style>
+        #image-preview img {
+            max-width: 90%;
+            max-height: 100%;
+            margin: 0 auto;
+            display: none;
+        }
+        .has-padding {
+            padding-top: 20px;
+        }
+        .progress {
+            display: none;
+        }
+    </style>
+    <script>
+        function handleClick(event) {
+            let input = document.getElementById('file-input');
+            if (input.files.length !== 1) {
+                alert('bad number of files');
+                return;
+            }
+            let file = input.files[0];
+
+            $('#filename').text(file.name);
+            $('#image').attr('src', window.URL.createObjectURL(file))
+                .show();
+        }
+        $('#file-input').on('input', handleClick);
+        $('#submit').on('click', () => $('#form').submit());
+        $('#form').on('submit', e => {
+            e.preventDefault();
+
+            let input = document.getElementById('file-input');
+            if (input.files.length !== 1) {
+                alert('bad number of files');
+                return;
+            }
+            let file = input.files[0];
+
+            let formData = new FormData();
+            formData.append('file', file);
+            fetch('/submit', {
+                method: 'POST',
+                body: formData
+            }).then(console.info);
+
+        })
+    </script>
+    </body>
+</html>
