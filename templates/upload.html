@@ -95,7 +95,12 @@
         function populateResult() {
             fetch('/result')
                 .then(r => r.text())
-                .then(t => $('#story').text(t.replace('\n', '<br>')));
+                .then(t => {
+                    let $story = $('#story');
+                    $story.text(t.replace('\n', '<br>'));
+                    speechSynthesis.cancel();
+                    speechSynthesis.speak(new SpeechSynthesisUtterance(t));
+                });
         }
 
         function fetchProgress() {
@@ -149,6 +154,7 @@
                     prog.attr('value', '0');
                     prog.removeClass('is-danger');
                     prog.removeClass('is-success');
+                    prog.removeAttr('value');
                     $('.progress-text').text('Identifying...');
                     fetchProgress();
                 }

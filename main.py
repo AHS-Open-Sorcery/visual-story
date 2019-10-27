@@ -59,7 +59,7 @@ def run_process(params, out: Queue):
 
     # step 3: send prompt to desired AI
     global generated
-    generated = generation.generate(prompt, out)
+    generated = prompt + generation.generate(prompt, out)
     lock.release()
 
 
