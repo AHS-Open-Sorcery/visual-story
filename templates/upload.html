@@ -124,7 +124,9 @@
                         return;
                     }
 
-                    $('#image').attr('src', '/static/detected.jpg');
+                    if (json.progress > 0.5) {
+                        $('#image').attr('src', '/static/detected.jpg');
+                    }
 
                     progress.attr('value', Math.round(json.progress * 100).toString());
                     progressText.text(json.message);
