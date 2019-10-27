@@ -83,7 +83,6 @@ def begin():
     if filename is None:
         return 'failed; filename none', 422
 
-    global task
     task = Task(run_process, (filename, tags))
     return 'yes'
 
