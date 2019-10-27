@@ -104,6 +104,11 @@ def generate(prompt) -> str:
     args.model_name_or_path = 'gpt2'
     args.prompt = prompt
     args.seed = random.randint(20, 50)
+    args.temperature = 1.0
+    args.repetition_penalty = 1.0
+    args.top_k = 0
+    args.top_p = 0.9
+    args.stop_token = None
 
     args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     args.n_gpu = torch.cuda.device_count()
