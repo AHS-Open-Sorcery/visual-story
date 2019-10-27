@@ -26,7 +26,6 @@ def getOccupation(filename):
     prediction.setJsonPath("preTrainedModels/idenprof.json")
     prediction.loadModel(num_objects=10)
 
-    predictions, probabilities = prediction.predictImage(filename, result_count=3)
+    predictions, probabilities = prediction.predictImage(filename, result_count=1)
 
-    for eachPrediction, eachProbability in zip(predictions, probabilities):
-        yield (eachPrediction, eachProbability)
+    return prediction[0]

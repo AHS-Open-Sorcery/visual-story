@@ -55,7 +55,13 @@ def run_process(params, out: Queue):
     # print(occupations)
 
     # step 2: build prompt
-    prompt = prompt_form.prompt(Counter(objects), tags)
+    counter = Counter(objects)
+    if counter['person'] == 1:
+        occupation = imageDetection.getOccupation(os.path.join('images', filename))
+        counter.pop('person')
+        counter[occupation] += 1
+
+    prompt = prompt_form.prompt(counter, tags)
 
     # step 3: send prompt to desired AI
     global generated

@@ -104,7 +104,7 @@
                 .then(r => r.text())
                 .then(t => {
                     let $story = $('#story');
-                    $story.text(t.replace('\n', '<br>'));
+                    $story.text(t);
                     speechSynthesis.cancel();
                     speechSynthesis.speak(new SpeechSynthesisUtterance(t));
                 });
@@ -124,7 +124,7 @@
                         return;
                     }
 
-                    $('#image').src = '/static/detected.jpg';
+                    $('#image').attr('src', '/static/detected.jpg');
 
                     progress.attr('value', Math.round(json.progress * 100).toString());
                     progressText.text(json.message);
