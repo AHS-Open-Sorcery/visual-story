@@ -42,8 +42,8 @@
                         </div>
                     </div>
 
-                    <progress class="progress" value="0" max="100">0%</progress>
                     <p class="progress-text"></p>
+                    <progress class="progress" value="0" max="100">0%</progress>
 
                 </div>
                 </form>
@@ -54,9 +54,9 @@
         </div>
     </section>
     <section class="section">
-        <pre id="story">
+        <p id="story">
 
-        </pre>
+        </p>
     </section>
     <style>
         #image-preview img {
@@ -95,7 +95,7 @@
         function populateResult() {
             fetch('/result')
                 .then(r => r.text())
-                .then(t => $('#story').text(t));
+                .then(t => $('#story').text(t.replace('\n', '<br>')));
         }
 
         function fetchProgress() {
