@@ -13,7 +13,7 @@ def getObjects(filename):
     detector.setModelPath(os.path.join(execution_path, "preTrainedModels/yolo.h5"))
 
     detector.loadModel()
-    detections = detector.detectObjectsFromImage(input_image=os.path.join(execution_path , filename), output_image_path=os.path.join(execution_path , "imagenew.jpg"))
+    detections = detector.detectObjectsFromImage(input_image=os.path.join(execution_path , filename), output_image_path=os.path.join(execution_path, 'static', "detected.jpg"))
 
     for eachObject in detections:
         yield (eachObject["name"], eachObject["percentage_probability"])

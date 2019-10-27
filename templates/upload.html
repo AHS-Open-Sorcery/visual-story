@@ -40,6 +40,11 @@
                         <div class="control">
                             <button class="button is-link" id="submit">Submit</button>
                         </div>
+                        <div class="control">
+                            <button class="button is-link" onclick="speechSynthesis.cancel()">
+                                Stop speaking!
+                            </button>
+                        </div>
                     </div>
 
                     <p class="progress-text"></p>
@@ -54,9 +59,9 @@
         </div>
     </section>
     <section class="section">
-        <p id="story">
+        <pre id="story">
 
-        </p>
+        </pre>
     </section>
     <style>
         #image-preview img {
@@ -76,6 +81,8 @@
             font-size: 18px;
             max-width: 70%;
             margin: 0 auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     </style>
     <script>
@@ -148,8 +155,8 @@
                 method: 'POST',
                 body: formData
             }).then(res => {
+                let prog = $('.progress');
                 if (res.status === 200) {
-                    let prog = $('.progress');
                     prog.show();
                     prog.attr('value', '0');
                     prog.removeClass('is-danger');
@@ -157,6 +164,9 @@
                     prog.removeAttr('value');
                     $('.progress-text').text('Identifying...');
                     fetchProgress();
+                } else {
+                    res.text().then(text => $('.progress-text').text(text));
+                    prog.addClass('is-danger');
                 }
             });
 
