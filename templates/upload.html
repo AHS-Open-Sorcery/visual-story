@@ -41,7 +41,7 @@
                             <button class="button is-link" id="submit">Submit</button>
                         </div>
                         <div class="control">
-                            <button class="button is-link" onclick="speechSynthesis.cancel()">
+                            <button class="button is-link is-warning" onclick="speechSynthesis.cancel()">
                                 Stop speaking!
                             </button>
                         </div>
@@ -124,6 +124,8 @@
                         return;
                     }
 
+                    $('#image').src = '/static/detected.jpg';
+
                     progress.attr('value', Math.round(json.progress * 100).toString());
                     progressText.text(json.message);
 
@@ -137,7 +139,6 @@
         }
 
         $('#file-input').on('input', handleClick);
-        $('#submit').on('click', () => $('#form').submit());
         $('#form').on('submit', e => {
             e.preventDefault();
 

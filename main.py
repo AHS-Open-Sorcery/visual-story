@@ -58,7 +58,6 @@ def run_process(params, out: Queue):
 
     # step 2: build prompt
     prompt = prompt_form.prompt(Counter(objects), tags)
-    out.put(ProgressUpdate(0.3, 'built prompt for GPT-2'))
 
     # step 3: send prompt to desired AI
     global generated
