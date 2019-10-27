@@ -54,9 +54,9 @@
         </div>
     </section>
     <section class="section">
-        <p id="story">
+        <pre id="story">
 
-        </p>
+        </pre>
     </section>
     <style>
         #image-preview img {
@@ -92,6 +92,12 @@
                 .show();
         }
 
+        function populateResult() {
+            fetch('/result')
+                .then(r => r.text())
+                .then(t => $('#story').text(t));
+        }
+
         function fetchProgress() {
             fetch('/progress')
                 .then(r => r.json())
@@ -111,6 +117,8 @@
 
                     if (json.progress <= 0.99) {
                         fetchProgress();
+                    } else {
+                        populateResult();
                     }
                 });
         }

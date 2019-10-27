@@ -36,6 +36,7 @@ def submit():
 
 lock = Lock()
 task = None
+generated = None
 
 
 def run_process(params, out: Queue):
@@ -57,9 +58,9 @@ def run_process(params, out: Queue):
     out.put(ProgressUpdate(0.3, 'built prompt for GPT-2'))
 
     # step 3: send prompt to desired AI
+    global generated
     generated = generation.generate(prompt, out)
     lock.release()
-    return generated
 
 
 @app.route('/begin')
@@ -88,6 +89,11 @@ def progress():
         return json.dumps({'status': 'fail', 'message': 'no current task'}), 400
     update: ProgressUpdate = task.read_progress()
     return json.dumps({'status': 'success', 'message': update.message, 'progress': update.progress})
+
+
+@app.route('/result')
+def result():
+    return ('no results', 400) if result is None else result
 
 
 if __name__ == '__main__':

@@ -18,6 +18,7 @@ class Task:
             target(msg, out)
             out.put(ProgressUpdate(1, 'task complete'))
 
+        self.output = Queue()
         self.thread = Thread(target=thread_run, args=(prompt, self.output))
         self.thread.start()
 
