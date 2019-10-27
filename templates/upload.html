@@ -43,6 +43,7 @@
                     </div>
 
                     <progress class="progress" value="0" max="100">0%</progress>
+                    <p class="progress-text"></p>
 
                 </div>
                 </form>
@@ -90,6 +91,30 @@
             $('#image').attr('src', window.URL.createObjectURL(file))
                 .show();
         }
+
+        function fetchProgress() {
+            fetch('/progress')
+                .then(r => r.json())
+                .then(json => {
+                    const progress = $('.progress');
+                    const progressText = $('.progress-text');
+
+                    if (json.status === 'fail') {
+                        progress.addClass('is-danger');
+                        progress.attr('value', '100');
+                        progressText.text(json.message);
+                        return;
+                    }
+
+                    progress.attr('value', Math.round(json.progress * 100).toString());
+                    progressText.text(json.message);
+
+                    if (json.progress <= 0.99) {
+                        fetchProgress();
+                    }
+                });
+        }
+
         $('#file-input').on('input', handleClick);
         $('#submit').on('click', () => $('#form').submit());
         $('#form').on('submit', e => {

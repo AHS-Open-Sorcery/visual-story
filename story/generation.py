@@ -14,6 +14,8 @@ from transformers import TransfoXLLMHeadModel, TransfoXLTokenizer
 from transformers import CTRLLMHeadModel, CTRLTokenizer
 from transformers import XLMWithLMHeadModel, XLMTokenizer
 
+from task import ProgressUpdate
+
 
 def set_seed(args):
     np.random.seed(args.seed)
@@ -53,13 +55,14 @@ def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float('Inf')
     return logits
 
 
-def sample_sequence(model, length, context, num_samples=1, temperature=1, top_k=0, top_p=0.0, repetition_penalty=1.0,
+def sample_sequence(model, length, context, out, num_samples=1, temperature=1, top_k=0, top_p=0.0, repetition_penalty=1.0,
                     is_xlnet=False, is_xlm_mlm=False, xlm_mask_token=None, xlm_lang=None, device='cpu'):
     context = torch.tensor(context, dtype=torch.long, device=device)
     context = context.unsqueeze(0).repeat(num_samples, 1)
     generated = context
     with torch.no_grad():
-        for _ in trange(length):
+        for prog in trange(length):
+            out.put(ProgressUpdate(prog / length * 0.66 + 0.33, f'iteration {prog} of {length}'))
 
             inputs = {'input_ids': generated}
             if is_xlnet:
@@ -97,7 +100,7 @@ def sample_sequence(model, length, context, num_samples=1, temperature=1, top_k=
     return generated
 
 
-def generate(prompt) -> str:
+def generate(prompt, output) -> str:
     args = argparse.Namespace()
     args.model_type = 'gpt2'
     args.length = 500
@@ -121,6 +124,7 @@ def generate(prompt) -> str:
     model = model_class.from_pretrained(args.model_name_or_path)
     model.to(args.device)
     model.eval()
+    output.put(ProgressUpdate(0.33, 'evaluated pre-trained model'))
     #
     # if args.length < 0 and model.config.max_position_embeddings > 0:
     #     args.length = model.config.max_position_embeddings
@@ -165,6 +169,7 @@ def generate(prompt) -> str:
         xlm_mask_token=xlm_mask_token,
         xlm_lang=xlm_lang,
         device=args.device,
+        out=output
     )
     out = out[0, len(context_tokens):].tolist()
 

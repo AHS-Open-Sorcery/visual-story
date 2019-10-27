@@ -1,3 +1,5 @@
+from queue import Queue
+
 from flask import *
 from blacklist import blacklisted
 from werkzeug.utils import secure_filename
@@ -5,6 +7,9 @@ from ObjectIdentification import imageDetection
 from story import prompt_form, generation
 from collections import Counter
 from threading import Lock
+from task import Task, ProgressUpdate
+import json
+
 import os
 app = Flask(__name__)
 
@@ -26,45 +31,63 @@ def submit():
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join('images', filename))
-        return redirect(url_for('progress', filename=filename, tags=request.form.get('tags')))
+        return redirect(url_for('begin', filename=filename, tags=request.form.get('tags')))
 
 
 lock = Lock()
-cached = {}
+task = None
 
 
-@app.route('/progress')
-def progress():
+def run_process(params, out: Queue):
     lock.acquire()
+    filename, tags = params
+
+    # step 1: identify objects
+    objects_confidence = list(imageDetection.getObjects(os.path.join('images', filename)))
+    objects = list(map(lambda tup: tup[0], objects_confidence))
+    print(objects)
+    out.put(ProgressUpdate(0.27, 'detected ' + ', '.join(objects)))
+
+    # TODO come back to occupation detection
+    # occupations = list(imageDetection.getOccupation(os.path.join('images', filename)))
+    # print(occupations)
+
+    # step 2: build prompt
+    prompt = prompt_form.prompt(Counter(objects), tags)
+    out.put(ProgressUpdate(0.3, 'built prompt for GPT-2'))
+
+    # step 3: send prompt to desired AI
+    generated = generation.generate(prompt, out)
+    lock.release()
+    return generated
+
+
+@app.route('/begin')
+def begin():
+    if lock.locked():
+        return 'duplicate req', 400
+
     filename = request.args.get('filename')
     tags = request.args.get('tags')
     if tags is None:
         tags = []
     else:
         tags = tags.split(',')
+
     if filename is None:
         return 'failed; filename none', 422
 
-    if filename in cached:
-        return cached[filename]
+    global task
+    task = Task(run_process, (filename, tags))
+    return 'yes'
 
-    # step 1: identify objects
-    objects = list(imageDetection.getObjects(os.path.join('images', filename)))
-    print(objects)
-    # occupations = list(imageDetection.getOccupation(os.path.join('images', filename)))
-    # print(occupations)
 
-    # step 2: build prompt
-    prompt = prompt_form.prompt(Counter(list(map(lambda tup: tup[0], objects))), tags)
-
-    # step 3: send prompt to desired AI
-    generated = generation.generate(prompt)
-    cached[filename] = generated
-
-    # step 4: retrieve generated story
-    # step 5: profit
-    lock.release()
-    return generated
+@app.route('/progress')
+def progress():
+    if task is None:
+        return json.dumps({'status': 'fail', 'message': 'no current task'}), 400
+    update: ProgressUpdate = task.read_progress()
+    return json.dumps({'status': 'success', 'message': update.message, 'progress': update.progress})
 
 
 if __name__ == '__main__':
