@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 import argparse
 import numpy as np
+import random
 from tqdm import trange
 
 from transformers import GPT2Config, OpenAIGPTConfig, XLNetConfig, TransfoXLConfig, XLMConfig, CTRLConfig
@@ -102,6 +103,7 @@ def generate(prompt) -> str:
     args.length = 500
     args.model_name_or_path = 'gpt2'
     args.prompt = prompt
+    args.seed = random.randint(20, 50)
 
     args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     args.n_gpu = torch.cuda.device_count()

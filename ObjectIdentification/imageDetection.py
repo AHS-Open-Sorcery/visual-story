@@ -7,14 +7,10 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 execution_path = os.getcwd()
 def getObjects(filename):
-    modelType = "yolo"
+
     detector = ObjectDetection()
-    if (modelType=="yolo"):
-        detector.setModelTypeAsYOLOv3()
-        detector.setModelPath(os.path.join(execution_path, "preTrainedModels/yolo.h5"))
-    elif (modelType=="retina"):
-        detector.setModelTypeAsRetinaNet()
-        detector.setModelPath(os.path.join(execution_path, "preTrainedModels/resnet50Coco.h5"))
+    detector.setModelTypeAsYOLOv3()
+    detector.setModelPath(os.path.join(execution_path, "preTrainedModels/yolo.h5"))
 
     detector.loadModel()
     detections = detector.detectObjectsFromImage(input_image=os.path.join(execution_path , filename), output_image_path=os.path.join(execution_path , "imagenew.jpg"))

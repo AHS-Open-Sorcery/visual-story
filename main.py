@@ -37,8 +37,8 @@ def progress():
     # step 1: identify objects
     objects = list(imageDetection.getObjects(os.path.join('images', filename)))
     print(objects)
-    occupations = list(imageDetection.getOccupation(os.path.join('images', filename)))
-    print(occupations)
+    # occupations = list(imageDetection.getOccupation(os.path.join('images', filename)))
+    # print(occupations)
 
     # step 2: build prompt
     prompt = prompt_form.prompt(Counter(list(map(lambda tup: tup[0], objects))))
