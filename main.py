@@ -26,17 +26,27 @@ def submit():
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join('images', filename))
-        return redirect(url_for('progress', filename=filename))
+        return redirect(url_for('progress', filename=filename, tags=request.args.get('tags')))
 
 
 lock = Lock()
+cached = {}
+
 
 @app.route('/progress')
 def progress():
-    lock.acquire()
+    lock.acquire(timeout=5)
     filename = request.args.get('filename')
+    tags = request.args.get('tags')
+    if tags is None:
+        tags = []
+    else:
+        tags.split(',')
     if filename is None:
         return 'failed; filename none', 422
+
+    if filename in cached:
+        return cached[filename]
 
     # step 1: identify objects
     objects = list(imageDetection.getObjects(os.path.join('images', filename)))
@@ -45,10 +55,11 @@ def progress():
     # print(occupations)
 
     # step 2: build prompt
-    prompt = prompt_form.prompt(Counter(list(map(lambda tup: tup[0], objects))))
+    prompt = prompt_form.prompt(Counter(list(map(lambda tup: tup[0], objects))), *tags)
 
     # step 3: send prompt to desired AI
     generated = generation.generate(prompt)
+    cached[filename] = generated
 
     # step 4: retrieve generated story
     # step 5: profit

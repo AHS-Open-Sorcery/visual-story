@@ -104,12 +104,14 @@
 
             let formData = new FormData();
             formData.append('file', file);
+            formData.append('tags', $('#tags').value());
             fetch('/submit', {
                 method: 'POST',
                 body: formData
             }).then(res => {
                 return res.text();
             }).then(text => {
+                console.info(text);
                 $('#id').text(text);
             });
 
