@@ -35,7 +35,7 @@ cached = {}
 
 @app.route('/progress')
 def progress():
-    lock.acquire(timeout=5)
+    lock.acquire()
     filename = request.args.get('filename')
     tags = request.args.get('tags')
     if tags is None:
