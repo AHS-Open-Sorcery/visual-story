@@ -143,6 +143,8 @@
                 body: formData
             }).then(res => {
                 if (res.status === 200) {
+                    $('.progress').show();
+                    $('.progress-text').text('Identifying...');
                     fetchProgress();
                 }
             });

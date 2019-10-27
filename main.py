@@ -93,7 +93,10 @@ def progress():
 
 @app.route('/result')
 def result():
-    return ('no results', 400) if result is None else result
+    if generated is None:
+        return 'no results', 400
+    else:
+        return generated
 
 
 if __name__ == '__main__':
